@@ -1,0 +1,79 @@
+Sub vbaChallenge()
+
+Dim ws As Worksheet
+
+For Each ws In Worksheets
+
+Dim ticker As String
+Dim opnPri As Double
+Dim clsPri As Double
+Dim yrlChg As Double
+Dim perDlt As Double
+Dim ttlVol As Double
+Dim lstRow As Long
+Dim eRow As Long
+    
+ticker = " "
+opnPri = 0
+clsPri = 0
+yrlChg = 0
+perDlt = 0
+ttlVol = 0
+lstRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+eRow = 2
+
+ws.Cells(1, 9).Value = "Ticker"
+ws.Cells(1, 10).Value = "Yearly Change"
+ws.Cells(1, 11).Value = "Percent Change"
+ws.Cells(1, 12).Value = "Total Stock Volume"
+
+opnPri = ws.Cells(2, 3).Value
+
+    For i = 2 To lstRow
+    
+        If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+        
+           ticker = ws.Cells(i, 1).Value
+           ws.Cells(eRow, 9).Value = ticker
+           
+           clsPri = ws.Cells(i, 6).Value
+           
+           yrlChg = opnPri - clsPri
+           ws.Cells(eRow, 10).Value = yrlChg
+           
+           If (yrlChg > 0) Then
+            ws.Cells(eRow, 10).Interior.ColorIndex = 4
+           ElseIf (yrlChg <= 0) Then
+            ws.Cells(eRow, 10).Interior.ColorIndex = 3
+           End If
+           
+           If (opnPri = 0 And clsPri = 0) Then
+            perDlt = 0
+           ElseIf (opnPri = 0 And clsPri <> 0) Then
+            perDlt = 1
+           Else
+            perDlt = yrlChg / opnPri
+            ws.Cells(eRow, 11).Value = perDlt
+            ws.Cells(eRow, 11).NumberFormat = "0.00%"
+           End If
+           
+           ttlVol = ttlVol + ws.Cells(i, 7).Value
+           ws.Cells(eRow, 12).Value = ttlVol
+            
+           eRow = eRow + 1
+                      
+           opnPri = ws.Cells(i + 1, 3).Value
+
+           ttlVol = 0
+            
+        Else
+        
+        ttlVol = ttlVol + ws.Cells(i, 7).Value
+        
+        End If
+        
+    Next i
+
+Next ws
+
+End Sub
